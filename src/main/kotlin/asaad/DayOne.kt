@@ -3,34 +3,23 @@ package asaad
 import java.io.File
 import java.util.*
 
-
 fun main() {
     val filePath = "sampleDayOne/input-day1.txt"
-
-    println("part 1: ")
-    solve(1, filePath)
-
-    println("part 2:")
-    solve(3, filePath)
-}
-
-
-fun solve(limit: Int, filePath: String) {
-
     val file = File(filePath)
-    val priorityQueue = PriorityQueue<Int>(Comparator.comparingInt{it})
+    val input = readInput(file)
 
-    file.readText()
-        .split("\n\n")
-        .map{ group -> group.lines().sumOf { it.toIntOrNull()?:0 }}
-        .forEach {priorityQueue.addLimited(it, limit)}
+    println("part 1: ${solve(1, input)}")
+    println("part 2: ${solve(3, input)}")
+}
+fun readInput(file: File) = file.readText()
+    .split("\n\n", "\r\n\r\n")
+    .map { group -> group.lines().sumOf { it.toIntOrNull()?:0 }}
+fun solve(limit: Int, elseCalories: List<Int>): Int{
+    val priorityQueue = PriorityQueue<Int>(Comparator.comparingInt { it })
 
-    var sum = 0
-    repeat(limit){
-        priorityQueue.apply { sum += this.poll() }
-    }
+    elseCalories.forEach { priorityQueue.addLimited(it, limit) }
 
-    println(sum)
+    return priorityQueue.sum()
 }
 
 fun <E> PriorityQueue<E>.addLimited(element: E, limit: Int) {
