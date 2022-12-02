@@ -1,9 +1,9 @@
 package asaad
 
 fun main(args: Array<String>) {
-    println("Hello World!")
+    println("Day 1:")
+    DayOne("sampleDay1/input-day1.txt").result()
 
-    // Try adding program arguments via Run/Debug configuration.
-    // Learn more about running applications: https://www.jetbrains.com/help/idea/running-applications.html.
-    println("Program arguments: ${args.joinToString()}")
+    println("Day 2:")
+    DayTwo("sampleDay2/input-day2.txt").result()
 }
