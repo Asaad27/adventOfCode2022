@@ -3,7 +3,7 @@ package asaad
 import java.io.File
 import java.util.*
 
-class DayOne(private val filePath: String) {
+class DayOne(filePath: String) {
 
     private val file = File(filePath)
     private val input = readInput(file)
@@ -22,11 +22,13 @@ class DayOne(private val filePath: String) {
 
         return priorityQueue.sum()
     }
+
+    private fun <E> PriorityQueue<E>.addLimited(element: E, limit: Int) {
+        add(element)
+        if (size > limit) poll()
+    }
 }
 
 
-fun <E> PriorityQueue<E>.addLimited(element: E, limit: Int) {
-    add(element)
-    if (size > limit) poll()
-}
+
 

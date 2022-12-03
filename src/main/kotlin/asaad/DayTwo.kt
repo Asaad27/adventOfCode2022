@@ -8,19 +8,14 @@ class DayTwo(filePath: String) {
      */
     private var debug = false
     private var part1 = true
-    private val hands = listOf(
-        "Rock" to 1,
-        "Paper" to 2,
-        "Scissors" to 3
-    )
 
     private val handMapper = mapOf(
-        "A" to "Rock",
-        "X" to "Rock",
-        "Y" to "Paper",
-        "B" to "Paper",
-        "Z" to "Scissors",
-        "C" to "Scissors"
+        "A" to HAND.ROCK,
+        "X" to HAND.ROCK,
+        "Y" to HAND.PAPER,
+        "B" to HAND.PAPER,
+        "Z" to HAND.SCISSORS,
+        "C" to HAND.SCISSORS
     )
 
     private val outcomeMapper = mapOf(
@@ -32,6 +27,8 @@ class DayTwo(filePath: String) {
     private val file = File(filePath)
     private val input = readInput(file)
 
+    private val handSize = HAND.values().size
+
     private fun solve() =
         input.fold(0) { acc: Int, round: String ->
             acc + roundScore(round).also { if (debug) println("score : $it") }
@@ -40,38 +37,36 @@ class DayTwo(filePath: String) {
     fun result() {
         println("\tpart 1: ${solve()}")
         part1 = false
-        println("=====================")
         println("\tpart 2: ${solve()}")
     }
 
     private fun roundScore(round: String): Int {
         var score = 0
-        val (opponent, secondCol) = round.split(" ")
-            .mapIndexed { index, s -> if ((index == 0) || part1) handParser(s) else s }
-        val mine = if (part1) secondCol else outcomeToHand(opponent, outcomeMapper[secondCol]!!)
-        score += hands.first { it.first == mine }.second
+        val (firstCol, secondCol) = round.split(" ")
+        val opponent = handParser(firstCol)
+
+        val mine = if (part1) handParser(secondCol) else outcomeToHand(opponent, outcomeMapper[secondCol]!!)
+        score += mine.weight
         score += roundOutcome(opponent, mine).weight
 
         return score
     }
 
-    private fun getIndex(element: String) = hands.map { it.first }.indexOf(element)
-
-    private fun roundOutcome(opponent: String, mine: String): OUTCOME = when {
+    private fun roundOutcome(opponent: HAND, mine: HAND): OUTCOME = when {
         opponent == mine -> OUTCOME.DRAW
-        (getIndex(opponent) + 1).mod(hands.size)
-                == getIndex(mine) -> OUTCOME.WIN
+        (opponent.ordinal + 1).mod(handSize)
+                == mine.ordinal -> OUTCOME.WIN
 
         else -> OUTCOME.LOOSE
     }.also { if (debug) println("$opponent vs $mine : $it") }
 
-    private fun outcomeToHand(opponent: String, outcome: OUTCOME): String = when (outcome) {
-        OUTCOME.LOOSE -> hands[(getIndex(opponent) + hands.size - 1).mod(hands.size)].first
-        OUTCOME.WIN -> hands[(getIndex(opponent) + 1).mod(hands.size)].first
+    private fun outcomeToHand(opponent: HAND, outcome: OUTCOME): HAND = when (outcome) {
+        OUTCOME.LOOSE -> HAND.values()[(opponent.ordinal + handSize - 1).mod(handSize)]
+        OUTCOME.WIN -> HAND.values()[(opponent.ordinal + 1).mod(handSize)]
         else -> opponent
     }
 
-    private fun handParser(hand: String) = handMapper[hand]!!
+    private fun handParser(input: String) = handMapper[input]!!
 
     private fun readInput(file: File) = file.readLines()
 
@@ -79,6 +74,12 @@ class DayTwo(filePath: String) {
         WIN(6),
         LOOSE(0),
         DRAW(3);
+    }
+
+    private enum class HAND(val weight: Int) {
+        ROCK(1),
+        PAPER(2),
+        SCISSORS(3);
     }
 }
 
