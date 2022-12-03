@@ -18,7 +18,7 @@ class DayThree(filePath: String) {
         input.fold(0) { acc, s -> acc + RuckSack(s).repeatedItem().toPriority() }
 
     private fun solve2() =
-        input.chunked(3).map { chunk ->
+        input.chunked(3){ chunk ->
             chunk.map { it.toSet() }
                 .reduce { acc, chars -> acc.intersect(chars) }
                 .firstOrNull()
