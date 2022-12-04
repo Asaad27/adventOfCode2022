@@ -2,37 +2,35 @@ package asaad
 
 import java.io.File
 
+private fun IntRange.containsOneAnother(intRange: IntRange): Boolean {
+    return this.intersect(intRange).size == minOf(intRange.size, this.size)
+}
 
+private fun IntRange.overlap(intRange: IntRange): Boolean {
+    return this.intersect(intRange).isNotEmpty()
+}
 
+private val IntRange.size: Int
+    get() {
+        return this.last - this.first + 1
+    }
 
 class DayFour(filePath: String) {
     private val file = File(filePath)
     private val input = readInput(file).map { it.asRanges() }
 
     private fun readInput(file: File) = file.readLines()
-    private val IntRange.size: Int
-        get() {return this.last - this.first + 1}
-    private fun IntRange.containsOneAnother(intRange: IntRange): Boolean {
-        return this.intersect(intRange).size == minOf(intRange.size, this.size)
-    }
-
-    private fun IntRange.overlap(intRange: IntRange): Boolean {
-        return this.intersect(intRange).isNotEmpty()
-    }
 
     private fun String.asRanges(): List<IntRange> {
         return this.split(",").map { getFieldRange(it) }
     }
 
-    private fun solve1() =
-        input.count { it[0].containsOneAnother(it[1]) }
-
-    private fun solve2() =
-        input.count { it[0].overlap(it[1]) }
+    private fun solve(func: IntRange.(IntRange) -> Boolean) =
+        input.count { it[0].func(it[1]) }
 
     fun result() {
-        println("\tpart 1: ${solve1()}")
-        println("\tpart 2: ${solve2()}")
+        println("\tpart 1: ${solve(IntRange::containsOneAnother)}")
+        println("\tpart 2: ${solve(IntRange::overlap)}")
     }
 
     /**
