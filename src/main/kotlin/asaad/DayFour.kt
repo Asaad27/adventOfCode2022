@@ -2,17 +2,21 @@ package asaad
 
 import java.io.File
 
+
+
+
 class DayFour(filePath: String) {
     private val file = File(filePath)
     private val input = readInput(file).map { it.asRanges() }
 
     private fun readInput(file: File) = file.readLines()
-
+    private val IntRange.size: Int
+        get() {return this.last - this.first + 1}
     private fun IntRange.containsOneAnother(intRange: IntRange): Boolean {
-        return this.intersect(intRange).count() == minOf(intRange.count(), this.count())
+        return this.intersect(intRange).size == minOf(intRange.size, this.size)
     }
 
-    private fun IntRange.overlap(intRange: IntRange): Boolean{
+    private fun IntRange.overlap(intRange: IntRange): Boolean {
         return this.intersect(intRange).isNotEmpty()
     }
 
