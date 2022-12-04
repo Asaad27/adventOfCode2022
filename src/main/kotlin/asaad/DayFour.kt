@@ -16,12 +16,16 @@ class DayFour(filePath: String) {
         return this.intersect(intRange).isNotEmpty()
     }
 
+    private fun String.asRanges(): List<IntRange> {
+        return this.split(",").map { getFieldRange(it) }
+    }
+
     private fun solve1() =
-        input.map { line -> line.split(",").map { getFieldRange(it) } }
+        input.map { it.asRanges() }
             .count { it[0].containsOneAnother(it[1]) }
 
     private fun solve2() =
-        input.map { line -> line.split(",").map { getFieldRange(it) } }
+        input.map { it.asRanges() }
             .count { it[0].overlap(it[1]) }
 
     fun result() {
