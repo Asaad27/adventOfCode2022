@@ -9,4 +9,7 @@ fun main() {
 
     println("Day 3:")
     DayThree("sampleDay3/input-day3.txt").result()
+
+    println("Day 4:")
+    DayFour("sampleDay4/input-day4.txt").result()
 }
