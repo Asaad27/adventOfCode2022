@@ -4,7 +4,7 @@ import java.io.File
 
 class DayFour(filePath: String) {
     private val file = File(filePath)
-    private val input = readInput(file)
+    private val input = readInput(file).map { it.asRanges() }
 
     private fun readInput(file: File) = file.readLines()
 
@@ -21,12 +21,10 @@ class DayFour(filePath: String) {
     }
 
     private fun solve1() =
-        input.map { it.asRanges() }
-            .count { it[0].containsOneAnother(it[1]) }
+        input.count { it[0].containsOneAnother(it[1]) }
 
     private fun solve2() =
-        input.map { it.asRanges() }
-            .count { it[0].overlap(it[1]) }
+        input.count { it[0].overlap(it[1]) }
 
     fun result() {
         println("\tpart 1: ${solve1()}")
@@ -42,5 +40,4 @@ class DayFour(filePath: String) {
         return first..second
     }
 }
-
 
