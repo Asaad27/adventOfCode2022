@@ -4,9 +4,13 @@ import java.io.File
 
 class DayTwo(filePath: String) {
     /*
-     *  rock -> Scissors -> paper ->rock
+     *  rock -> Scissors -> paper ->rock...  ->win, <-loose
      */
-    private var debug = false
+    private val file = File(filePath)
+    private val input = readInput(file)
+
+    private fun readInput(file: File) = file.readLines()
+
     private var part1 = true
 
     private val handMapper = mapOf(
@@ -24,15 +28,7 @@ class DayTwo(filePath: String) {
         "Z" to OUTCOME.WIN
     )
 
-    private val file = File(filePath)
-    private val input = readInput(file)
-
     private val handSize = HAND.values().size
-
-    private fun solve() =
-        input.fold(0) { acc: Int, round: String ->
-            acc + roundScore(round).also { if (debug) println("score : $it") }
-        }
 
     fun result() {
         println("\tpart 1: ${solve()}")
@@ -40,14 +36,18 @@ class DayTwo(filePath: String) {
         println("\tpart 2: ${solve()}")
     }
 
+    private fun solve() =
+        input.fold(0) { acc: Int, round: String ->
+            acc + roundScore(round)
+        }
+
     private fun roundScore(round: String): Int {
         var score = 0
         val (firstCol, secondCol) = round.split(" ")
-        val opponent = handParser(firstCol)
+        val opponentHand = handParser(firstCol)
 
-        val mine = if (part1) handParser(secondCol) else outcomeToHand(opponent, outcomeMapper[secondCol]!!)
-        score += mine.weight
-        score += roundOutcome(opponent, mine).weight
+        val myHand = if (part1) handParser(secondCol) else outcomeToHand(opponentHand, outcomeParser(secondCol))
+        score += myHand.score + roundOutcome(opponentHand, myHand).score
 
         return score
     }
@@ -58,7 +58,7 @@ class DayTwo(filePath: String) {
                 == mine.ordinal -> OUTCOME.WIN
 
         else -> OUTCOME.LOOSE
-    }.also { if (debug) println("$opponent vs $mine : $it") }
+    }
 
     private fun outcomeToHand(opponent: HAND, outcome: OUTCOME): HAND = when (outcome) {
         OUTCOME.LOOSE -> HAND.values()[(opponent.ordinal + handSize - 1).mod(handSize)]
@@ -68,15 +68,15 @@ class DayTwo(filePath: String) {
 
     private fun handParser(input: String) = handMapper[input]!!
 
-    private fun readInput(file: File) = file.readLines()
+    private fun outcomeParser(input: String) = outcomeMapper[input]!!
 
-    private enum class OUTCOME(val weight: Int) {
+    private enum class OUTCOME(val score: Int) {
         WIN(6),
         LOOSE(0),
         DRAW(3);
     }
 
-    private enum class HAND(val weight: Int) {
+    private enum class HAND(val score: Int) {
         ROCK(1),
         PAPER(2),
         SCISSORS(3);
