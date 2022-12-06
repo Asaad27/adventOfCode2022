@@ -15,4 +15,7 @@ fun main() {
 
     println("Day 5:")
     DayFive("samples/day5/input.txt").result()
+
+    println("Day 6:")
+    DaySix("samples/day6/input.txt").result()
 }
