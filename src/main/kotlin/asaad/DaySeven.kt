@@ -57,11 +57,9 @@ class DaySeven(filePath: String) {
      * Space Complexity : O(N) where N is the number of directories
      */
     private fun getDirsSizes(node: Node, sizes: MutableList<Int>) {
-
         sizes.add(node.dirSize)
         for (child in node.children)
             getDirsSizes(child, sizes)
-
     }
 
     /**
@@ -137,7 +135,7 @@ class DaySeven(filePath: String) {
         var name: String,
         var dirSize: Int = 0,
         var children: MutableList<Node> = mutableListOf(),
-        )
+    )
 
     private fun <E> List<E>.readNext(): String? {
         if (lineNumber > size - 1)
@@ -145,7 +143,6 @@ class DaySeven(filePath: String) {
 
         return input[lineNumber].also { lineNumber++ }
     }
-
 }
 
 
