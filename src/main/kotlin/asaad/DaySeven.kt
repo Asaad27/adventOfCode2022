@@ -2,11 +2,14 @@ package asaad
 
 import java.io.File
 
+private const val MAX_STORAGE = 70000000
+private const val REQUIRED_STORAGE = 30000000
+private const val PART1 = 100000
+
 class DaySeven(filePath: String) {
     private val file = File(filePath)
     private val input = readInput(file)
     private var lineNumber = 0
-
     private fun readInput(file: File) = file.bufferedReader().readLines()
 
     fun result() {
@@ -14,32 +17,30 @@ class DaySeven(filePath: String) {
         val root = Node(name = "/")
         head.children.add(root)
         createFileTree(head)
+        val dirSizes = mutableListOf<Int>()
+        getDirsSizes(root, sizes = dirSizes)
+        dirSizes.sort()
 
-        println("\tpart 1: ${solve1(root)}")
-        println("\tpart 2: ${solve2(root)}")
+        println("\tpart 1: ${solve1(dirSizes)}")
+        println("\tpart 2: ${solve2(root, dirSizes)}")
     }
 
-    private fun solve1(root: Node) = sumOfDirsWithAtMost(100000, root)
+    /**
+     * Time complexity: O(Log(N)) where N is the number of directories
+     */
+    private fun solve2(root: Node, sizes: MutableList<Int>): Int {
+        val used = root.dirSize
+        val available = MAX_STORAGE - used
 
-    private fun solve2(root: Node): Int {
-        val maxSize = 70000000
-        val required = 30000000
-        val used = root.sum
-        val available = maxSize - used
-        if (available >= required)
+        if (available >= REQUIRED_STORAGE)
             return 0
-
-        val sizes = mutableListOf<Int>()
-        getDirsSizes(root, sizes)
-        sizes.sort()
-
 
         var answer = 0
         var (left, right) = listOf(0, sizes.size - 1)
         while (left <= right) {
             val mid = left + (right - left) / 2
             val current = sizes[mid]
-            if (available >= required - current) {
+            if (available >= REQUIRED_STORAGE - current) {
                 answer = current
                 right = mid - 1
             } else {
@@ -53,68 +54,67 @@ class DaySeven(filePath: String) {
     /**
      * @param sizes: the list where the directory sizes will be appended
      * gets the list of directory sizes
+     * Space Complexity : O(N) where N is the number of directories
      */
     private fun getDirsSizes(node: Node, sizes: MutableList<Int>) {
 
-        sizes.add(node.sum)
+        sizes.add(node.dirSize)
         for (child in node.children)
             getDirsSizes(child, sizes)
 
     }
 
-    private fun sumOfDirsWithAtMost(size: Int, node: Node): Int {
-
-        var sum = 0
-        if (node.sum <= size && node.name != "/") {
-            sum += node.sum
-        }
-
-        for (child in node.children) {
-            sum += sumOfDirsWithAtMost(size, child)
-        }
-
-        return sum
-    }
+    /**
+     * Time Complexity: O(N) where N is the number of directories
+     */
+    private fun solve1(dirSizes: List<Int>) = dirSizes.takeWhile { it <= PART1 }.sum()
 
     /**
      * Creates a dir tree, and computes the size of each directory
+     * Time Complexity: O(M) where M is the number of lines
      */
     private fun createFileTree(current: Node): Int {
         var nextLine = input.readNext()
         val nodes = HashMap<String, Node>()
         while (nextLine != null) {
-            if (nextLine.startsWith("$")) {
-                val command = parseCommand(nextLine)
-                when (command.first) {
-                    Command.LS -> {
-                        nextLine = input.readNext()
-                        continue
-                    }
+            when {
+                nextLine.startsWith("$") -> {
+                    val command = parseCommand(nextLine)
+                    when (command.first) {
+                        Command.LS -> {}
 
-                    Command.GOTO -> {
-                        val dirNode = command.second!!
-                        if (dirNode == "/")
-                            nodes[dirNode] = current.children.first()
-                        current.sum += createFileTree(nodes[dirNode]!!)
-                    }
+                        Command.GOTO -> {
+                            val dirNode = command.second!!
+                            if (dirNode == "/")
+                                nodes[dirNode] = current.children.first()
+                            current.dirSize += createFileTree(nodes[dirNode]!!)
+                        }
 
-                    Command.BACK -> return current.sum
+                        Command.BACK -> return current.dirSize
+                    }
                 }
-            } else if (nextLine.startsWith("dir")) {
-                val dirName = nextLine.split(" ")[1]
-                val dirNode = Node(name = dirName)
-                nodes[dirName] = dirNode
-                current.children.add(dirNode)
-            } else if (nextLine[0].isDigit()) {
-                val fileSize = nextLine.split(" ")[0].toInt()
-                current.sum += fileSize
-            } else {
-                throw Exception("unable to parse line $nextLine")
+
+                nextLine.startsWith("dir") -> {
+                    val dirName = nextLine.split(" ")[1]
+                    val dirNode = Node(name = dirName)
+                    nodes[dirName] = dirNode
+                    current.children.add(dirNode)
+                }
+
+                nextLine[0].isDigit() -> {
+                    val fileSize = nextLine.split(" ")[0].toInt()
+                    current.dirSize += fileSize
+                }
+
+                else -> {
+                    throw Exception("unable to parse line $nextLine")
+                }
             }
+
             nextLine = input.readNext()
         }
 
-        return current.sum
+        return current.dirSize
     }
 
     private fun parseCommand(line: String): Pair<Command, String?> {
@@ -135,9 +135,8 @@ class DaySeven(filePath: String) {
 
     data class Node(
         var name: String,
-        var sum: Int = 0,
+        var dirSize: Int = 0,
         var children: MutableList<Node> = mutableListOf(),
-
         )
 
     private fun <E> List<E>.readNext(): String? {
