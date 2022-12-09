@@ -22,4 +22,7 @@ fun main() {
     println("Day 7:")
     DaySeven("samples/day7/input.txt").result()
 
+    println("Day 8:")
+    DayEight("samples/day8/input.txt").result()
+
 }
