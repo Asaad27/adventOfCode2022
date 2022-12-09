@@ -2,27 +2,30 @@ package asaad
 
 fun main() {
     println("Day 1:")
-    DayOne("samples/day1/input.txt").result()
+    DayOne("inputs/day1/input.txt").result()
 
     println("Day 2:")
-    DayTwo("samples/day2/input.txt").result()
+    DayTwo("inputs/day2/input.txt").result()
 
     println("Day 3:")
-    DayThree("samples/day3/input.txt").result()
+    DayThree("inputs/day3/input.txt").result()
 
     println("Day 4:")
-    DayFour("samples/day4/input.txt").result()
+    DayFour("inputs/day4/input.txt").result()
 
     println("Day 5:")
-    DayFive("samples/day5/input.txt").result()
+    DayFive("inputs/day5/input.txt").result()
 
     println("Day 6:")
-    DaySix("samples/day6/input.txt").result()
+    DaySix("inputs/day6/input.txt").result()
 
     println("Day 7:")
-    DaySeven("samples/day7/input.txt").result()
+    DaySeven("inputs/day7/input.txt").result()
 
     println("Day 8:")
-    DayEight("samples/day8/input.txt").result()
+    DayEight("inputs/day8/input.txt").result()
+
+    println("Day 9:")
+    DayNine("inputs/day9/input.txt").result()
 
 }

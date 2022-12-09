@@ -7,7 +7,6 @@ class DayEight(filePath: String) {
 
     private val file = File(filePath)
     private val input = readInput(file)
-    private var lineNumber = 0
     private fun readInput(file: File) = file.bufferedReader().readLines()
 
 
@@ -19,29 +18,29 @@ class DayEight(filePath: String) {
 
     private fun solve(): Pair<Int, Int> {
 
-        var row = input.readNext()?.map { it.digitToInt() }
-        val rowSize = row?.size ?: 0
-        var rowNumber = 0
-
-        if (rowSize == 0)
+        val numberOfRows = input.size
+        if (numberOfRows == 0)
             throw Exception("Empty file")
+
+        val numberOfCols = input[0].length
 
         val trees = HashSet<Tree>()
 
-        val topToBottomDec = Array(rowSize) { Stack<Tree>() }
+        val topToBottomDec = Array(numberOfCols) { Stack<Tree>() }
         val leftToRightDec = Stack<Tree>()
 
-        while (row != null) {
+        for (rowNumber in 0 until  numberOfRows) {
+            for (colNumber in 0 until numberOfCols) {
 
-            for (colNumber in 0 until rowSize) {
+                val height = input[rowNumber][colNumber].digitToInt()
                 val currentNode = Tree(
-                    height = row[colNumber],
+                    height = height,
                     rowNumber = rowNumber,
                     colNumber = colNumber,
-                    clearRight = Int.MAX_VALUE,
+                    clearRight = numberOfCols-1-colNumber,
                     clearLeft = colNumber,
                     clearTop = rowNumber,
-                    clearBottom = Int.MAX_VALUE
+                    clearBottom = numberOfRows-1-rowNumber
                 ).also { trees.add(it) }
 
                 if (leftToRightDec.isEmpty())
@@ -65,6 +64,7 @@ class DayEight(filePath: String) {
                     }
                 }
                 leftToRightDec.push(currentNode)
+
 
                 if (topToBottomDec[colNumber].isEmpty())
                     currentNode.hasViewOnEdge = true
@@ -94,15 +94,13 @@ class DayEight(filePath: String) {
             while (leftToRightDec.isNotEmpty()) {
                 leftToRightDec.pop().apply {
                     hasViewOnEdge = true
-                    clearRight = (rowSize-1) - this.colNumber
+                    clearRight = (numberOfCols-1) - this.colNumber
                 }
             }
 
             leftToRightDec.clear()
-            row = input.readNext()?.map { it.digitToInt() }
-            rowNumber++
         }
-        val numberOfRows = rowNumber
+
 
         for (stack in topToBottomDec) {
             while (stack.isNotEmpty()){
@@ -114,14 +112,6 @@ class DayEight(filePath: String) {
         }
 
         return trees.count { it.hasViewOnEdge } to trees.maxOf { it.getScenicScore() }
-    }
-
-
-    private fun <E> List<E>.readNext(): String? {
-        if (lineNumber > size - 1)
-            return null
-
-        return input[lineNumber].also { lineNumber++ }
     }
 
     data class Tree(
