@@ -35,10 +35,6 @@ class DayNine(filePath: String) {
         private var rope = Array(length) {0 to 0}
         private val visitedPositions = HashSet<Pair<Int, Int>>()
 
-        init {
-            visitedPositions.add(0 to 0)
-        }
-
         private fun distanceBetween(tail: Pair<Int, Int>, head: Pair<Int, Int>) = maxOf(
             abs(head.first - tail.first),
             abs(head.second - tail.second)
