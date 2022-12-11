@@ -28,4 +28,7 @@ fun main() {
     println("Day 9:")
     DayNine("inputs/day9/input.txt").result()
 
+    println("Day 10:")
+    DayTen("inputs/day10/input.txt").result()
+
 }
